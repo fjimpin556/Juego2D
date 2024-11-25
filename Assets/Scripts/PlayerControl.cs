@@ -3,8 +3,9 @@ using UnityEngine;
 public class PlayerControl : MonoBehaviour
 {
     Rigidbody2D rb;
-    public int speed = 4;
-    public int jumpForce = 5;
+    [SerializeField] int speed = 4;
+    [SerializeField] int jumpForce = 10;
+    [SerializeField] int contador = 10;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,6 +36,14 @@ public class PlayerControl : MonoBehaviour
         else
         {
             return true;
+        }
+    }
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Item")
+        {
+            Destroy(other.gameObject);
+            contador -= 1;
         }
     }
 }
