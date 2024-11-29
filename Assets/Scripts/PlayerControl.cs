@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerControl : MonoBehaviour
 {
@@ -7,12 +8,16 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] int jumpForce = 5;
     [SerializeField] SpriteRenderer sprite;
     [SerializeField] Animator anim;
+    [SerializeField] GameObject shot;
+
     [SerializeField] int contador = 10;
+    [SerializeField] int lives = 3;
     bool jumped = false;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        GameManager.invulnerable = false;
         rb = GetComponent<Rigidbody2D>();
 
     }
@@ -36,7 +41,7 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && grounded())
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
-        } 
+        }
         else if (Input.GetKeyDown(KeyCode.Space) && jumped == false)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
@@ -47,7 +52,7 @@ public class PlayerControl : MonoBehaviour
         {
             anim.SetBool("isRunning", true);
         }
-        else 
+        else
         {
             anim.SetBool("isRunning", false);
         }
@@ -60,6 +65,11 @@ public class PlayerControl : MonoBehaviour
         {
             anim.SetBool("isJumping", false);
             jumped = false;
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Instantiate(shot, new Vector3(transform.position.x, transform.position.y + 1.7f, 0), Quaternion.identity);
         }
     }
     bool grounded()
@@ -80,6 +90,32 @@ public class PlayerControl : MonoBehaviour
         {
             Destroy(other.gameObject);
             contador -= 1;
+        }
+
+        if (other.gameObject.tag == "PowerUp")
+        {
+            Destroy(other.gameObject);
+            GameManager.invulnerable = true;
+            sprite.color = Color.cyan;
+            Invoke("becomeVulnerable", 5);
+        }
+    }
+
+    void becomeVulnerable()
+    {
+        sprite.color = Color.white;
+        GameManager.invulnerable = false;
+    }
+
+    public void Damage()
+    {
+        lives -= 1;
+        sprite.color = Color.red;
+        GameManager.invulnerable = true;
+        Invoke("becomeVulnerable", 2);
+        if (lives < 0)
+        {
+            SceneManager.LoadScene("Level1");
         }
     }
 }
