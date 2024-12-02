@@ -9,14 +9,30 @@ public class ShotController : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
-        rb.linearVelocity = Vector2.right * speed;
+        if (PlayerControl.right)
+        {
+            rb.linearVelocity = Vector2.right * speed;
+        }
+        else
+        {
+            rb.linearVelocity = Vector2.left * speed;
+        }
         Invoke("DestroyShot", 3);
     }
 
     // Update is called once per frame
     void Update()
     {
-        
+
+    }
+
+    void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.gameObject.tag == "Enemy")
+        {
+            Destroy(other.gameObject);
+            Destroy(gameObject);
+        }
     }
 
     void DestroyShot()

@@ -1,8 +1,12 @@
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class AnimationControl : MonoBehaviour
 {
-    public static bool invulnerable = false;    
+    public void endShoot()
+    {
+        Animator anim = GetComponent<Animator>();
+        anim.SetBool("isShooting", false);
+    }
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
