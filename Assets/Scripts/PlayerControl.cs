@@ -27,6 +27,11 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] GameObject TextWin, TextLose;
     bool endGame = false;
 
+    // Audio
+    AudioSource audioSrc;
+    [SerializeField] AudioClip soundJump, soundShoot, soundItem, soundDamage;
+
+
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -36,6 +41,7 @@ public class PlayerControl : MonoBehaviour
         TextLives.text = "Items: " + lives;
         TextTime.text = time.ToString();
 
+        audioSrc = GetComponent<AudioSource>();
     }
 
     // Update is called once per frame
@@ -61,10 +67,12 @@ public class PlayerControl : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && grounded())
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            audioSrc.PlayOneShot(soundJump);
         }
         else if (Input.GetKeyDown(KeyCode.Space) && jumped == false)
         {
             rb.AddForce(Vector2.up * jumpForce, ForceMode2D.Impulse);
+            audioSrc.PlayOneShot(soundJump);
             jumped = true;
         }
 
@@ -92,6 +100,7 @@ public class PlayerControl : MonoBehaviour
         {
             Instantiate(shot, new Vector3(transform.position.x, transform.position.y + 1.7f, 0), Quaternion.identity);
             anim.SetBool("isShooting", true);
+            audioSrc.PlayOneShot(soundShoot);
         }
 
         time -= Time.deltaTime;
@@ -131,6 +140,7 @@ public class PlayerControl : MonoBehaviour
         {
             Destroy(other.gameObject);
             items += 1;
+            audioSrc.PlayOneShot(soundItem);
             TextItems.text = "Items: " + items;
             if (items > 1)
             {
@@ -143,6 +153,7 @@ public class PlayerControl : MonoBehaviour
         if (other.gameObject.tag == "PowerUp")
         {
             Destroy(other.gameObject);
+            audioSrc.PlayOneShot(soundItem);
             GameManager.invulnerable = true;
             sprite.color = Color.cyan;
             Invoke("becomeVulnerable", 5);
@@ -162,6 +173,7 @@ public class PlayerControl : MonoBehaviour
             lives -= 1;
         }
         sprite.color = Color.red;
+        audioSrc.PlayOneShot(soundDamage);
         GameManager.invulnerable = true;
         Invoke("becomeVulnerable", 2);
         if (lives < 0)
