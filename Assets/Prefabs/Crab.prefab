@@ -196,3 +196,5 @@ MonoBehaviour:
   speed: 3
   endPosition: {x: 14, y: -3, z: 0}
   sprite: {fileID: 1470170122218305214}
+  anim: {fileID: 8499121966108459867}
+  player: {fileID: 0}

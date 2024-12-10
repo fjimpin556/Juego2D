@@ -9,12 +9,14 @@ public class CrabController : MonoBehaviour
     bool goingToTheEnd = true;
     [SerializeField] SpriteRenderer sprite;
     float prevXpos;
+    [SerializeField] Animator anim;
+    [SerializeField] GameObject player;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         startPosition = transform.position;
-        prevXpos = transform.position.x;
+        prevXpos = transform.position.x;        
     }
 
     // Update is called once per frame
@@ -47,6 +49,23 @@ public class CrabController : MonoBehaviour
         }
 
         prevXpos = transform.position.x;
+
+        // Ver al jugador
+        if ((transform.position.x - player.transform.position.x) < 8 && (transform.position.x - player.transform.position.x) > -8)
+        {
+            if ((transform.position.y - player.transform.position.y) < 8 && (transform.position.y - player.transform.position.y) > -8)
+            {
+            anim.SetBool("isWatching", true);
+            }
+            else
+            {
+                anim.SetBool("isWatching", false);
+            }
+        }
+        else
+        {
+            anim.SetBool("isWatching", false);
+        }
     }
 
     void OnTriggerEnter2D(Collider2D other)

@@ -37,6 +37,11 @@ public class PlayerControl : MonoBehaviour
     [SerializeField] GameObject TextWin, TextLose;
     bool endGame = false;
 
+    // Objetos
+    bool son = false;
+    string objectSonType;
+    GameObject objectSon;
+
     // Audio
     AudioSource audioSrc;
     [SerializeField] AudioClip soundJump, soundShoot, soundItem, soundDamage;
@@ -194,6 +199,12 @@ public class PlayerControl : MonoBehaviour
             }
 
             lastHeight = height;
+
+            // Usar objeto
+            if (Input.GetKeyDown(KeyCode.Y) && son)
+            {
+                useObject();
+            }
         }
         else
         {
@@ -230,16 +241,25 @@ public class PlayerControl : MonoBehaviour
 
         if (other.gameObject.tag == "PowerUp")
         {
-            Destroy(other.gameObject);
-            audioSrc.PlayOneShot(soundItem);
-            GameManager.invulnerable = true;
-            sprite.color = Color.cyan;
-            Invoke("becomeVulnerable", 5);
+            if (!son)
+            {
+                other.gameObject.transform.SetParent(transform);
+                other.transform.localPosition = new Vector2(-0.1f, 0.5f);
+                son = true;
+                objectSonType = "PowerUp";
+                objectSon = other.gameObject;
+            }            
         }
 
         if (other.gameObject.tag == "Poisonus")
         {
             Damage();
+        }
+
+        if (other.gameObject.tag == "Bouncer")
+        {
+            rb.AddForce(Vector2.up * 3 * jumpForce, ForceMode2D.Impulse);
+            audioSrc.PlayOneShot(soundJump);
         }
     }
 
@@ -293,5 +313,17 @@ public class PlayerControl : MonoBehaviour
     void canDashing()
     {
         canDash = true;
+    }
+
+    void useObject()
+    {
+        if (objectSonType == "PowerUp")
+        {
+            Destroy(objectSon);
+            audioSrc.PlayOneShot(soundItem);
+            GameManager.invulnerable = true;
+            sprite.color = Color.cyan;
+            Invoke("becomeVulnerable", 5);
+        }
     }
 }
