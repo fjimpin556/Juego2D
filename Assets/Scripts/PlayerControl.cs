@@ -7,6 +7,7 @@ public class PlayerControl : MonoBehaviour
     Rigidbody2D rb;
     [SerializeField] int speed = 4;
     [SerializeField] int jumpForce = 5;
+    [SerializeField] int dashForce = 2;
     [SerializeField] SpriteRenderer sprite;
     [SerializeField] Animator anim;
     [SerializeField] GameObject shot;
@@ -19,6 +20,8 @@ public class PlayerControl : MonoBehaviour
     float lastHeight;
     bool shooted = false;
     bool ducked = false;
+    bool dashed = false;
+    bool canDash = true;
 
 
     // TextosUI
@@ -59,7 +62,7 @@ public class PlayerControl : MonoBehaviour
     {
         if (!endGame)
         {
-            if (!ducked)
+            if (!ducked && !dashed)
             {
                 float inputX = Input.GetAxis("Horizontal");
                 rb.linearVelocity = new Vector2(inputX * speed, rb.linearVelocity.y);
@@ -138,17 +141,45 @@ public class PlayerControl : MonoBehaviour
             // Agacharse
             if (Input.GetKey(KeyCode.LeftControl) && grounded())
             {
-                capsule.offset = new Vector2(-0.1060266f, 0.7418327f);
-                capsule.size = new Vector2(0.9914839f, 1.483665f);                
-                anim.SetBool("isDucking", true);
-                ducked = true;
+                if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.LeftArrow) || Input.GetKey(KeyCode.RightArrow))
+                {
+                    if (!dashed && canDash)
+                    {
+                        ducked = true;
+                        anim.SetBool("isDucking", true);
+                        dashed = true;
+                        canDash = false;
+                        capsule.offset = new Vector2(-0.1060266f, 0.7418327f);
+                        capsule.size = new Vector2(0.9914839f, 1.483665f);
+                        if (right)
+                        {
+                            rb.AddForce(Vector2.right * dashForce, ForceMode2D.Impulse);
+                        }
+                        else
+                        {
+                            rb.AddForce(Vector2.left * dashForce, ForceMode2D.Impulse);
+                        }
+                        Invoke("stopDashing", 0.8f);
+                        Invoke("canDashing", 3);
+                    }
+                }
+                else
+                {
+                    capsule.offset = new Vector2(0.06700808f, 0.7810583f);
+                    capsule.size = new Vector2(0.9703304f, 1.562116f);
+                    anim.SetBool("isDucking", true);
+                    ducked = true;
+                }
             }
             else
             {
-                capsule.offset = new Vector2(0.0397824f, 0.9362447f);
-                capsule.size = new Vector2(0.9158791f, 1.872489f);  
-                anim.SetBool("isDucking", false);
-                ducked = false;
+                if (!dashed)
+                {
+                    capsule.offset = new Vector2(0.0397824f, 0.9362447f);
+                    capsule.size = new Vector2(0.9158791f, 1.872489f);
+                    anim.SetBool("isDucking", false);
+                    ducked = false;
+                }
             }
 
             // Salto caida
@@ -250,5 +281,17 @@ public class PlayerControl : MonoBehaviour
     void returnShot()
     {
         shooted = false;
+    }
+
+    void stopDashing()
+    {
+        dashed = false;
+        ducked = false;
+        anim.SetBool("isDucking", false);
+    }
+
+    void canDashing()
+    {
+        canDash = true;
     }
 }

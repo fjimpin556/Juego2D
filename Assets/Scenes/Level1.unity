@@ -30480,6 +30480,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 4
   jumpForce: 5
+  dashForce: 2
   sprite: {fileID: 621353748}
   anim: {fileID: 621353749}
   shot: {fileID: 996141159030303875, guid: 523daf3c6e7afc04299b1307f12572ca, type: 3}
